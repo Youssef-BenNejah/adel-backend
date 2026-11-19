@@ -1,0 +1,78 @@
+spring:
+  application:
+    name: adel-parfum-api
+  profiles:
+    active: ${APP_ENV}
+  data:
+    mongodb:
+      uri: mongodb+srv://${DB_USERNAME}:${DB_PASSWORD}@${DB_CLUSTER_URL}/${DB_NAME}?retryWrites=true&w=majority&appName=adel-parfum-api
+      database: ${DB_NAME}
+      auto-index-creation: false
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
+      password: ${REDIS_PASSWORD}
+  threads:
+    virtual:
+      enabled: true
+
+app:
+  env: ${APP_ENV}
+  port: ${APP_PORT}
+
+server:
+  port: ${APP_PORT}
+  compression:
+    enabled: true
+    mime-types: application/json
+    min-response-size: 1024
+
+jwt:
+  private-key: ${JWT_PRIVATE_KEY}
+  public-key: ${JWT_PUBLIC_KEY}
+  access-token-expiry: ${JWT_ACCESS_TOKEN_EXPIRY_MS}
+  refresh-token-expiry: ${JWT_REFRESH_TOKEN_EXPIRY_MS}
+
+security:
+  bcrypt-strength: ${BCRYPT_STRENGTH}
+  allowed-origins: ${ALLOWED_ORIGINS}
+  max-login-attempts: ${MAX_LOGIN_ATTEMPTS}
+  lock-duration-minutes: ${ACCOUNT_LOCK_DURATION_MINUTES}
+
+actuator:
+  username: ${ACTUATOR_USERNAME}
+  password: ${ACTUATOR_PASSWORD}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: never
+
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+
+shop:
+  admin:
+    username: ${SHOP_ADMIN_USERNAME:admin}
+    email: ${SHOP_ADMIN_EMAIL:admin@adelparfum.tn}
+    password: ${SHOP_ADMIN_PASSWORD:adel2026}
+  media:
+    max-bytes: ${SHOP_MEDIA_MAX_BYTES:8388608}
+    min-dimension: ${SHOP_MEDIA_MIN_DIMENSION:600}
+    max-dimension: ${SHOP_MEDIA_MAX_DIMENSION:8000}
+    presign-expiry-minutes: ${SHOP_MEDIA_PRESIGN_EXPIRY_MINUTES:10}
+    abandoned-upload-hours: ${SHOP_MEDIA_ABANDONED_UPLOAD_HOURS:24}
+    orphan-grace-days: ${SHOP_MEDIA_ORPHAN_GRACE_DAYS:7}
+
+cloudinary:
+  cloud-name: ${CLOUDINARY_CLOUD_NAME:}
+  api-key: ${CLOUDINARY_API_KEY:}
+  api-secret: ${CLOUDINARY_API_SECRET:}
+  folder: ${CLOUDINARY_FOLDER:adel-parfum/media}
