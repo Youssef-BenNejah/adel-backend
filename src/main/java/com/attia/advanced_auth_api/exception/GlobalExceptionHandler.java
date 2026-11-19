@@ -8,10 +8,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.servlet.NoHandlerFoundException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 @RestControllerAdvice
 @Slf4j
@@ -36,6 +39,27 @@ public class GlobalExceptionHandler {
 		problem.setType(URI.create("https://yourapp.com/errors/validation"));
 		problem.setInstance(URI.create(request.getRequestURI()));
 		return ResponseEntity.badRequest().body(problem);
+	}
+
+	/** Unmapped route — no controller matches this path at all. */
+	@ExceptionHandler({ NoResourceFoundException.class, NoHandlerFoundException.class })
+	public ResponseEntity<ProblemDetail> handleNotFound(Exception ex, HttpServletRequest request) {
+		ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND,
+				"No endpoint " + request.getMethod() + " " + request.getRequestURI() + ".");
+		problem.setTitle("Not Found");
+		problem.setType(URI.create("https://yourapp.com/errors/404"));
+		problem.setInstance(URI.create(request.getRequestURI()));
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(problem);
+	}
+
+	/** Route exists, but not for this HTTP method. */
+	@ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+	public ResponseEntity<ProblemDetail> handleMethodNotAllowed(HttpRequestMethodNotSupportedException ex, HttpServletRequest request) {
+		ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.METHOD_NOT_ALLOWED, ex.getMessage());
+		problem.setTitle("Method Not Allowed");
+		problem.setType(URI.create("https://yourapp.com/errors/405"));
+		problem.setInstance(URI.create(request.getRequestURI()));
+		return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(problem);
 	}
 
 	@ExceptionHandler(Exception.class)

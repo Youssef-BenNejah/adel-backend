@@ -28,5 +28,5 @@ public class Settings {
 	@Builder.Default
 	private int shippingFee = 8;
 	@Builder.Default
-	private String freeShippingCode = "ALADIN10";
+	private String freeShippingCode = "ADEL10";
 }
